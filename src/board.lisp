@@ -127,3 +127,24 @@
   (init-knights b)
   (init-queens b)
   (init-rooks b))
+
+
+(defmacro make-PBoard (f b members chars)
+  `(progn
+     ,@(loop for m in members
+	     for c in chars
+	     collect `(,f (,m ,b) ,c))))
+
+(defun print-PBoard (pb)
+  (loop for i from 0 below (length pb)
+	do (format t "~A" (nth i pb))
+	(when (= (mod (1+ i) 8) 0)
+	  (terpri))))
+
+(defun bitvector->PBoard (v pb char)
+  "Add the characters to pb depending on the bitvector, a 0 is a space a
+1 is a specific character"
+  (loop for idx from 0
+	for bit in v
+	do (cond ((= idx 1) (setf (nth idx v) char))
+		 ((= idx 0) (setf (nth idx v) " ")))))
