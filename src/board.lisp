@@ -148,3 +148,20 @@
 	for bit in v
 	do (cond ((= idx 1) (setf (nth idx v) char))
 		 ((= idx 0) (setf (nth idx v) " ")))))
+
+(defun rank (idx)
+  (mod idx 8))
+
+(defun file (idx)
+  (cond ((= (rem idx 8) 0) 0)
+	((and (>= (rem idx 8) 1) (<= (rem idx 8) 7)) 1)))
+
+(defun uci->idx (sq)
+  (- (* (rank sq) 8) (- (file sq) 8)))
+
+(defun idx->uci (idx)
+  (let ((f 0)
+	(r 0))
+    (+ (+ (floor (/ idx 8)) (file idx)) f)
+    (+ (mod idx 8) r))
+  '(f r))
