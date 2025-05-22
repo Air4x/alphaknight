@@ -96,11 +96,23 @@ al bianco"
 		 ((= idx 0) (setf (nth idx v) " ")))))
 
 (defun rank (idx)
-  (mod idx 8))
+  "Dato un indice IDX ritorna il numero di rango corrispondente"
+  (1+ (mod idx 8)))
 
+(defun Prank (r)
+  "Dato un indice R corrispondente ad un rango, ritorna la lettera corrispondente"
+  (cond ((= r 1) "A")
+	((= r 2) "B")
+	((= r 3) "C")
+	((= r 4) "D")
+	((= r 5) "E")
+	((= r 6) "F")
+	((= r 7) "G")
+	((= r 8) "H")
+	(t "A")))
 (defun file (idx)
-  (cond ((= (rem idx 8) 0) 0)
-	((and (>= (rem idx 8) 1) (<= (rem idx 8) 7)) 1)))
+  (cond ((= (rem idx 8) 0) (1+ 0))
+	((and (>= (rem idx 8) 1) (<= (rem idx 8) 7)) (1+ 1))))
 
 (defun uci->idx (sq)
   (- (* (rank sq) 8) (- (file sq) 8)))

@@ -6,4 +6,7 @@
     :serial t
     :components ((:file "src/package")
 		 (:file "src/board")
+		 (:file "src/position")
+		 (:file "src/evaluation")
+		 (:file "src/move")
 		 (:file "src/main")))
