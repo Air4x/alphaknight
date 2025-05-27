@@ -55,6 +55,21 @@
   (init-queens b)
   (init-rooks b))
 
+(defun deep-copy-Board (b)
+  (make-Board
+  :WKnights (Board-WKnights b)
+  :WPawns   (Board-WPawns b)
+  :WRooks (Board-WRooks b)
+  :WBishops (Board-WBishops b)
+  :WKings (Board-WKings b)
+  :WQueens (Board-WQueens b)
+  :BPawns (Board-BPawns b)
+  :BKnights (Board-BKnights b)
+  :BBishops (Board-BBishops b)
+  :BRooks (Board-BRooks b)
+  :BKings (Board-BKings b)
+  :BQueens (Board-BQueens b)))
+
 (defun get-White-piece (piece board)
   "Data una keyword ritorna la posizione dei pezzi corrispondenti
 al bianco"
@@ -110,6 +125,7 @@ al bianco"
 	((= r 7) "G")
 	((= r 8) "H")
 	(t "A")))
+
 (defun file (idx)
   (cond ((= (rem idx 8) 0) (1+ 0))
 	((and (>= (rem idx 8) 1) (<= (rem idx 8) 7)) (1+ 1))))
@@ -118,8 +134,13 @@ al bianco"
   (- (* (rank sq) 8) (- (file sq) 8)))
 
 (defun idx->uci (idx)
-  (let ((f 0)
-	(r 0))
-    (+ (+ (floor (/ idx 8)) (file idx)) f)
-    (+ (mod idx 8) r))
-  '(f r))
+  (let ((r 0)
+	(f 0))
+    (setf r (floor (/ idx 8)))
+    (setf f (rem idx 8))
+    (list r f)))
+
+(defun Puci (uci)
+  (let ((r (1+ (car uci)))
+	(f (1+ (cadr uci))))
+    (list (Prank r) f)))
