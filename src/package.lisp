@@ -1,3 +1,3 @@
-(defpackage #:alphaknight
-  (:use #:cl)
+(defpackage :alphaknight
+  (:use :cl)
   (:export #:start))
