@@ -13,7 +13,7 @@
 (defstruct square-tables
   Pawns-values
   Knights-values
-  Bishops-valuse
+  Bishops-values
   Rooks-values
   Queens-values
   Kings-midgame-values
