@@ -1,4 +1,4 @@
-(in-package #:alphaknight)
+(in-package :alphaknight)
 
 (defvar piece-values
   '((:pawn   100)

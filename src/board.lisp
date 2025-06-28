@@ -1,4 +1,4 @@
-(in-package #:alphaknight)
+(in-package :alphaknight)
 
 ;; Board, struct
 ;;; defines:
