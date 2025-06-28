@@ -1,19 +1,20 @@
-(in-package #:alphaknight)
+(in-package :alphaknight)
 
-;; Position, struct
+;; Posizione, struct
 ;;; defines:
-;;;; make-Position
-;;;; Position-p
+;;;; make-Posizione
+;;;; Posizione-p
 ;;; How to access a record
-;;;; Position-<NameOfRecord>
-(defstruct Position
-  Board
+;;;; Posizione-<NameOfRecord>
+(defstruct Posizione
+  board
   giocatore) ;; valori validi per giocatore: :bianco :nero
  
-(defvar *Position-record-names*
-  '(Position-Board Position-giocatore)) 
+(defvar *Posizione-record-names*
+  '(Posizione-Board Posizione-giocatore)) 
 
-(defun init-Position (p)
+(defun init-Posizione (p)
   "Inizializza una posizione"
-  (setf (Position-Board p) (init-board (make-Board)))
-  (seft (Position-giocatore p) :bianco))
+  (setf (Posizione-board p) (init-board (make-Board)))
+  (setf (Posizione-giocatore p) :bianco)
+  p)
