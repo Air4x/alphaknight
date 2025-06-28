@@ -95,57 +95,131 @@ al bianco"
 	((eq piece :queen)   (Board-BQueens board))
 	((eq piece :king)    (Board-BKings board))))
 
-(defmacro make-PBoard (f b members chars)
-  `(progn
-     ,@(loop for m in members
-	     for c in chars
-	     collect `(,f (,m ,b) ,c))))
-
-(defun print-PBoard (pb)
-  (loop for i from 0 below (length pb)
-	do (format t "~A" (nth i pb))
-	(when (= (mod (1+ i) 8) 0)
-	  (terpri))))
-
-(defun bitvector->PBoard (v pb char)
-  "Add the characters to pb depending on the bitvector, a 0 is a space a
-1 is a specific character"
-  (loop for idx from 0
-	for bit in v
-	do (cond ((= idx 1) (setf (nth idx v) char))
-		 ((= idx 0) (setf (nth idx v) " ")))))
+(defun print-board (board)
+  (let ((array (make-array 64 :initial-element "."))
+	(pieces '(:pawn :knight :bishop :rook :queen :king)))
+    (dolist (p pieces)
+      (let ((bitvec (get-White-piece p board)))
+	(dotimes (i 64)
+	  (when (= (elt bitvec i) 1)
+	    (setf (aref array i) (getf *white-chars* p))))))
+    (dolist (p pieces)
+      (let ((bitvec (get-Black-piece p board)))
+	(dotimes (i 64)
+	  (when (= (elt bitvec i) 1)
+	    (setf (aref array i) (getf *black-chars* p))))))
+    (dotimes (i 64)
+      (format t (aref array i))
+      (when (= (mod  (1+ i) 8) 0)
+	(terpri)))))
 
 (defun rank (idx)
   "Dato un indice IDX ritorna il numero di rango corrispondente"
   (1+ (mod idx 8)))
 
-(defun Prank (r)
-  "Dato un indice R corrispondente ad un rango, ritorna la lettera corrispondente"
-  (cond ((= r 1) "A")
-	((= r 2) "B")
-	((= r 3) "C")
-	((= r 4) "D")
-	((= r 5) "E")
-	((= r 6) "F")
-	((= r 7) "G")
-	((= r 8) "H")
+(defun Pfile (f)
+  "Dato un indice f corrispondente ad un rango, ritorna la lettera corrispondente"
+  (cond ((= f 1) "A")
+	((= f 2) "B")
+	((= f 3) "C")
+	((= f 4) "D")
+	((= f 5) "E")
+	((= f 6) "F")
+	((= f 7) "G")
+	((= f 8) "H")
 	(t "A")))
 
 (defun file (idx)
   (cond ((= (rem idx 8) 0) (1+ 0))
 	((and (>= (rem idx 8) 1) (<= (rem idx 8) 7)) (1+ 1))))
 
-(defun uci->idx (sq)
-  (- (* (rank sq) 8) (- (file sq) 8)))
+(defun uci->idx (uci)
+  (let ((f (car uci))
+	(r (cadr uci)))
+    (+ (* f 8) r)))
 
 (defun idx->uci (idx)
   (let ((r 0)
 	(f 0))
     (setf r (floor (/ idx 8)))
     (setf f (rem idx 8))
-    (list r f)))
+    (list f r)))
 
 (defun Puci (uci)
-  (let ((r (1+ (car uci)))
-	(f (1+ (cadr uci))))
-    (list (Prank r) f)))
+  (let ((r (1+ (cadr uci)))
+	(f (1+ (car uci))))
+    (list (Pfile f) r)))
+
+
+(defun opposite-color (color)
+  (if (eq color :bianco) :nero :bianco))
+
+(defun square-occupied-by-color (idx color board)
+  "Check if square is occupied by specified color"
+  (ecase color
+    (:bianco (or (eql (elt (Board-WPawns board) idx) 1)
+                 (eql (elt (Board-WKnights board) idx) 1)
+                 (eql (elt (Board-WBishops board) idx) 1)
+                 (eql (elt (Board-WRooks board) idx) 1)
+                 (eql (elt (Board-WQueens board) idx) 1)
+                 (eql (elt (Board-WKings board) idx) 1)))
+    (:nero (or (eql (elt (Board-BPawns board) idx) 1)
+               (eql (elt (Board-BKnights board) idx) 1)
+               (eql (elt (Board-BBishops board) idx) 1)
+               (eql (elt (Board-BRooks board) idx) 1)
+               (eql (elt (Board-BQueens board) idx) 1)
+               (eql (elt (Board-BKings board) idx) 1)))))
+
+;;; Add to board.lisp
+(defun get-king-square (board color)
+  "Find king position for COLOR"
+  (let ((king-vec (if (eq color :bianco)
+                    (Board-WKings board)
+                    (Board-BKings board))))
+    (dotimes (i 64)
+      (when (eql (elt king-vec i) 1)
+        (return i)))
+    nil))
+
+    
+;;; Complete get-piece-type-at function
+(defun get-piece-type-at (idx board color)
+  "Identify piece type at position"
+  (cond 
+    ((eql (elt (if (eq color :bianco) 
+                 (Board-WPawns board) 
+                 (Board-BPawns board))
+	       idx)
+	  1)
+     :pawn)
+    ((eql (elt (if (eq color :bianco) 
+                 (Board-WKnights board) 
+                 (Board-BKnights board))
+	       idx)
+	  1)
+     :knight)
+    ((eql (elt (if (eq color :bianco) 
+                 (Board-WBishops board) 
+                 (Board-BBishops board))
+	       idx)
+	  1)
+     :bishop)
+    ((eql (elt (if (eq color :bianco) 
+                 (Board-WRooks board) 
+                 (Board-BRooks board))
+	       idx)
+	  1)
+     :rook)
+    ((eql (elt (if (eq color :bianco) 
+                 (Board-WQueens board) 
+                 (Board-BQueens board))
+	       idx)
+	  1)
+     :queen)
+    ((eql (elt (if (eq color :bianco) 
+                 (Board-WKings board) 
+                 (Board-BKings board))
+	       idx)
+	  1)
+     :king)
+    (t nil)))
