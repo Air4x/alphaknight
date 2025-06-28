@@ -7,7 +7,7 @@
 ;;; How to access a record:
 ;;;; Board-<NameOfRecord>
 ;;; How to access a single tile:
-;;;; (elt (Board-<NameOfRecord> board))
+;;;; (elt (Board-<NameOfRecord> board) i)
 (defstruct Board
   WKnights
   WPawns
@@ -22,6 +22,10 @@
   BKings
   BQueens)
 
+(defvar *Board-members* '(WKnights WPawns WRooks WBishops WKings WQueens BPawns BKnights BBishops BRooks BKings BQueens))
+
+(defvar *white-chars* '(:knight "♘" :pawn "♙" :rook "♖" :bishop "♗" :king "♔" :queen "♕"))
+(defvar *black-chars* '(:pawn "♟" :knight "♞" :bishop "♝" :rook "♜" :king "♚" :queen "♛"))
 
 (defun init-pawns (b)
   (setf (Board-WPawns b) #*0000000011111111000000000000000000000000000000000000000000000000)
@@ -36,8 +40,8 @@
   (setf (Board-BKnights b) #*0000000000000000000000000000000000000000000000000000000000100100))
 
 (defun init-bishops (b)
-  (setf (Board-WBishops b) #*01000010000000000000000000000000000000000000000000000000000000)
-  (setf (Board-BBishops b) #*00000000000000000000000000000000000000000000000000000001000010))
+  (setf (Board-WBishops b) #*0100001000000000000000000000000000000000000000000000000000000000)
+  (setf (Board-BBishops b) #*0000000000000000000000000000000000000000000000000000000100001000))
 
 (defun init-kings (b)
   (setf (Board-WKings b) #*0000100000000000000000000000000000000000000000000000000000000000)
@@ -53,22 +57,23 @@
   (init-kings b)
   (init-knights b)
   (init-queens b)
-  (init-rooks b))
+  (init-rooks b)
+  b)
 
 (defun deep-copy-Board (b)
   (make-Board
-  :WKnights (Board-WKnights b)
-  :WPawns   (Board-WPawns b)
-  :WRooks (Board-WRooks b)
-  :WBishops (Board-WBishops b)
-  :WKings (Board-WKings b)
-  :WQueens (Board-WQueens b)
-  :BPawns (Board-BPawns b)
-  :BKnights (Board-BKnights b)
-  :BBishops (Board-BBishops b)
-  :BRooks (Board-BRooks b)
-  :BKings (Board-BKings b)
-  :BQueens (Board-BQueens b)))
+  :WKnights (copy-seq (Board-WKnights b))
+  :WPawns   (copy-seq (Board-WPawns b))
+  :WRooks   (copy-seq (Board-WRooks b))
+  :WBishops (copy-seq (Board-WBishops b))
+  :WKings   (copy-seq (Board-WKings b))
+  :WQueens  (copy-seq (Board-WQueens b))
+  :BPawns   (copy-seq (Board-BPawns b))
+  :BKnights (copy-seq (Board-BKnights b))
+  :BBishops (copy-seq (Board-BBishops b))
+  :BRooks   (copy-seq (Board-BRooks b))
+  :BKings   (copy-seq (Board-BKings b))
+  :BQueens  (copy-seq (Board-BQueens b))))
 
 (defun get-White-piece (piece board)
   "Data una keyword ritorna la posizione dei pezzi corrispondenti
